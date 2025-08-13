@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'blog',
     "settings",
     'property',
-    'accounts'
+    'accounts',
+    'taggit'
     
 ]
 
