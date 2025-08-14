@@ -28,6 +28,5 @@ urlpatterns = [
     # path('settings/', include('settings.urls')),
 ]
 
-# For static files (CSS, JavaScript, Images)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# For media files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
