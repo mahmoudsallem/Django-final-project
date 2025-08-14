@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ property.name }} • Property</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bs-primary: #4f46e5;
+      --bs-primary-rgb: 79, 70, 229;
+      --brand-accent: #14b8a6;
+      --brand-accent-rgb: 20, 184, 166;
+    }
+    body {
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(79, 70, 229, 0.09), transparent 60%),
+                  radial-gradient(900px 500px at 100% 0%, rgba(20, 184, 166, 0.08), transparent 60%),
+                  linear-gradient(180deg, #f3f6ff, #f8f9ff 35%, #fafbff);
+    }
+    .navbar-brand span { color: var(--bs-primary); }
+    .hero {
+      min-height: 320px;
+      border-radius: 18px;
+      display: flex;
+      align-items: end;
+      color: white;
+      overflow: hidden;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .chip { display: inline-block; padding: .25rem .5rem; border-radius: 999px; background: rgba(79,70,229,.08); color: #4f46e5; font-size: .75rem; }
+    .badge-price { font-size: .95rem; background: linear-gradient(135deg, var(--bs-primary), rgba(var(--brand-accent-rgb),1)); }
+    .gallery img { width: 100%; height: 180px; object-fit: cover; border-radius: .5rem; }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">Django <span>Property</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'property:property_list' %}">Explore</a></li>
+          <li class="nav-item"><a class="nav-link" href="#details">Details</a></li>
+          <li class="nav-item"><a class="btn btn-primary ms-lg-2" href="#contact">Book now</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow-1">
+    <div class="container py-4">
+      <div class="hero mb-4 px-3 px-md-4" style="background-image: linear-gradient(90deg, rgba(79,70,229,.70), rgba(20,184,166,.55)), url('{% if property.image %}{{ property.image.url }}{% else %}{% static "flat_hero.jpg" %}{% endif %}');">
+        <div class="py-4">
+          <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a class="link-light text-decoration-none" href="{% url 'property:property_list' %}">Properties</a></li>
+              <li class="breadcrumb-item active text-white-50" aria-current="page">{{ property.name }}</li>
+            </ol>
+          </nav>
+          <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+            <h1 class="display-6 fw-bold mb-0">{{ property.name }}</h1>
+            <span class="badge text-white badge-price">$ {{ property.price }}</span>
+          </div>
+          <div class="mt-2">
+            {% if property.location %}<span class="chip me-2">{{ property.location.name }}</span>{% endif %}
+            {% if property.category %}<span class="chip">{{ property.category.name }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div id="details" class="row g-4">
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            {% if property.image %}
+            <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.name }}" style="max-height:420px; object-fit:cover;" />
+            {% endif %}
+            <div class="card-body">
+              <h2 class="h5">About this property</h2>
+              <p class="text-muted">{{ property.description|linebreaks }}</p>
+              <div class="mt-3 text-muted small">Added on {{ property.created_at|date:"M d, Y" }}</div>
+            </div>
+          </div>
+
+          {% if property.images.all %}
+          <div class="mt-4">
+            <h3 class="h6 mb-3">Gallery</h3>
+            <div class="row g-2 gallery">
+              {% for img in property.images.all %}
+                <div class="col-6 col-md-4">
+                  <img src="{{ img.image.url }}" alt="{{ property.name }} image {{ forloop.counter }}" />
+                </div>
+              {% empty %}
+                <div class="text-muted">No additional images.</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h3 class="h6">Ready to book?</h3>
+              <p class="text-muted small">Contact the host to check availability and finalize your stay.</p>
+              <a id="contact" href="#" class="btn btn-primary w-100">Contact host</a>
+              <a href="{% url 'property:property_list' %}" class="btn btn-outline-secondary w-100 mt-2">Back to list</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="mt-auto pt-4 pb-5 border-top">
+    <div class="container">
+      <div class="row g-3 align-items-center">
+        <div class="col-12 col-md-6">
+          <h5 class="mb-1">Django Property</h5>
+          <div class="text-muted small">Find great places to stay, anywhere.</div>
+        </div>
+        <div class="col-12 col-md-6 text-md-end">
+          <a href="#" class="link-secondary me-3">About</a>
+          <a href="#" class="link-secondary me-3">Blog</a>
+          <a href="#" class="link-secondary">Contact</a>
+          <div class="text-muted small mt-2">&copy; {% now "Y" %} All rights reserved.</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
