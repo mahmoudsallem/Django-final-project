@@ -31,7 +31,7 @@ class Property(models.Model):
         safe_slug = self.slug
         if not safe_slug:
             safe_slug = slugify(self.name) if self.name else str(self.pk)
-        return reverse('property:property_detail', kwargs={'pk': self.pk, 'slug': safe_slug})
+        return reverse('property:property_detail', kwargs={'slug': safe_slug})
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
@@ -67,6 +67,8 @@ class PropertyReview(models.Model):
     def __str__(self):
         return f"Review for {str(self.property.name)} by {str(self.author.username)}"
 
+    class Meta:
+        ordering = ['-created_at']
 
 count = (
     (1,1),

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.utils.text import slugify
 
 # Create your views here.
 from django.views.generic import ListView, DetailView
@@ -21,20 +22,35 @@ class PropertyDetail(DetailView):
     template_name = 'property/property_detail.html'
     context_object_name = 'property'
 
+    def get_object(self, queryset=None):
+        queryset = queryset or self.get_queryset()
+        requested_slug = self.kwargs.get('slug')
+        try:
+            return queryset.get(slug=requested_slug)
+        except Property.DoesNotExist:
+            # Fallback: find an object whose slugified name matches, and persist slug
+            for candidate in queryset.filter(slug__isnull=True):
+                if slugify(candidate.name) == requested_slug:
+                    candidate.slug = requested_slug
+                    try:
+                        candidate.save(update_fields=['slug'])
+                    except Exception:
+                        pass
+                    return candidate
+            # If still not found, raise 404
+            raise
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
-        # Enforce canonical URL with slug only if object has a stored slug
+        # No pk in URL now; ensure object slug is set and canonical
         obj = self.object
         request_slug = kwargs.get('slug')
-        if obj.slug:
-            if request_slug != obj.slug:
-                return redirect(obj.get_absolute_url())
-        else:
-            # If no slug stored yet, avoid redirect loops; optionally persist incoming slug
-            if request_slug:
-                try:
-                    obj.slug = request_slug
-                    obj.save(update_fields=['slug'])
-                except Exception:
-                    pass
+        if not obj.slug and request_slug:
+            try:
+                obj.slug = request_slug
+                obj.save(update_fields=['slug'])
+            except Exception:
+                pass
+        elif obj.slug and request_slug != obj.slug:
+            return redirect(obj.get_absolute_url())
         return response

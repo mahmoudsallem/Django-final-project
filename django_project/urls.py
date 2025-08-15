@@ -18,15 +18,19 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
+from .views import landing_page, about_page
 
 urlpatterns = [
+    path('', landing_page, name='landing_page'),
+    path('about/', about_page, name='about_page'),
     path('admin/', admin.site.urls),
     # path('', include('about.urls')),
-    # path('blog/', include('blog.urls')),
-    path('property/', include('property.urls')),
+    path('blog/', include('blog.urls' ,namespace='blog')),
+    path('property/', include('property.urls' ,namespace='property')),
     # path('accounts/', include('accounts.urls')),
     # path('settings/', include('settings.urls')),
 ]
 
 # For media files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
