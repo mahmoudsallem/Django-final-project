@@ -18,10 +18,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
-from .views import landing_page, about_page
+from .views import landing_page
+from about.views import about_page
 
 urlpatterns = [
-    path('', landing_page, name='landing_page'),
+    path('', landing_page, name='hotel-landingpage'),
     path('about/', about_page, name='about_page'),
     path('admin/', admin.site.urls),
     # path('', include('about.urls')),

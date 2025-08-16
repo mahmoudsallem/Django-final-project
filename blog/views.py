@@ -5,7 +5,7 @@ from django.views.generic import ListView , DetailView
 
 class PostList(ListView):
     model = Post
-    template_name = 'blog/post_list.html'
+    template_name = 'blog.html'
     context_object_name = 'posts'
     ordering = ['-created_at']
 
